@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="dc.created" content="2026-10-22">
-<meta name="description" content="declaration: package: repository.file, class: AbstractFileRepository">
+<meta name="description" content="declaration: package: java.validation.repository.file, class: AbstractFileRepository">
 <meta name="generator" content="javadoc/ClassWriter">
 <link rel="stylesheet" type="text/css" href="../../resource-files/stylesheet.css">
 <script type="text/javascript" src="../../script-files/script.js"></script>
@@ -44,7 +44,7 @@ initTheme();
 <div class="sub-nav">
 <div class="nav-content">
 <ol class="sub-nav-list">
-<li><a href="package-summary.html" title="Package repository.file">repository.file</a></li>
+<li><a href="package-summary.html" title="Package java.validation.repository.file">java.validation.repository.file</a></li>
 <li><a href="AbstractFileRepository.html" title="Class AbstractFileRepository" class="current-selection">AbstractFileRepository</a></li>
 </ol>
 <div class="nav-list-search"><input type="text" id="search-input" disabled title="Search documentation (type /)" placeholder="Search documentation (type /)" aria-label="Search in documentation" autocomplete="off" spellcheck="false"><input type="reset" id="reset-search" disabled value="Reset"></div>
@@ -94,7 +94,7 @@ initTheme();
 <h1 title="Class AbstractFileRepository" class="title">Class AbstractFileRepository&lt;ID, E extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;ID&gt;&gt;</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="../memory/InMemoryRepository.html" title="class in repository.memory">repository.memory.InMemoryRepository</a>&lt;ID,<wbr>E&gt;
+<div class="inheritance"><a href="../memory/InMemoryRepository.html" title="class in java.validation.repository.memory">main.SocialNetwork.repository.memory.InMemoryRepository</a>&lt;ID,<wbr>E&gt;
 <div class="inheritance">repository.file.AbstractFileRepository&lt;ID,<wbr>E&gt;</div>
 </div>
 </div>
@@ -110,14 +110,14 @@ initTheme();
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="FriendshipFileRepository.html" title="class in repository.file">FriendshipFileRepository</a>, <a href="UtilizatorFileRepository.html" title="class in repository.file">UtilizatorFileRepository</a></code></dd>
+<dd><code><a href="FriendshipFileRepository.html" title="class in java.validation.repository.file">FriendshipFileRepository</a>, <a href="UtilizatorFileRepository.html" title="class in java.validation.repository.file">UtilizatorFileRepository</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">AbstractFileRepository&lt;ID, E extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;ID&gt;&gt;</span>
-<span class="extends-implements">extends <a href="../memory/InMemoryRepository.html" title="class in repository.memory">InMemoryRepository</a>&lt;ID,<wbr>E&gt;</span></div>
+<span class="extends-implements">extends <a href="../memory/InMemoryRepository.html" title="class in java.validation.repository.memory">InMemoryRepository</a>&lt;ID,<wbr>E&gt;</span></div>
 <div class="block">Abstract base class for persisting entities to a text file.
-Extends <a href="../memory/InMemoryRepository.html" title="class in repository.memory"><code>InMemoryRepository</code></a> by adding loading from file and automatic saving upon modifications.</div>
+Extends <a href="../memory/InMemoryRepository.html" title="class in java.validation.repository.memory"><code>InMemoryRepository</code></a> by adding loading from file and automatic saving upon modifications.</div>
 </div>
 </section>
 <section class="summary">
@@ -127,7 +127,7 @@ Extends <a href="../memory/InMemoryRepository.html" title="class in repository.m
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
 <div class="inherited-list">
-<h3 id="fields-inherited-from-class-repository.memory.InMemoryRepository">Fields inherited from class&nbsp;<a href="../memory/InMemoryRepository.html#field-summary" title="class in repository.memory">InMemoryRepository</a></h3>
+<h3 id="fields-inherited-from-class-repository.memory.InMemoryRepository">Fields inherited from class&nbsp;<a href="../memory/InMemoryRepository.html#field-summary" title="class in java.validation.repository.memory">InMemoryRepository</a></h3>
 <code><a href="../memory/InMemoryRepository.html#entities">entities</a></code>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -196,7 +196,7 @@ Extends <a href="../memory/InMemoryRepository.html" title="class in repository.m
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-repository.memory.InMemoryRepository">Methods inherited from class&nbsp;<a href="../memory/InMemoryRepository.html#method-summary" title="class in repository.memory">InMemoryRepository</a></h3>
+<h3 id="methods-inherited-from-class-repository.memory.InMemoryRepository">Methods inherited from class&nbsp;<a href="../memory/InMemoryRepository.html#method-summary" title="class in java.validation.repository.memory">InMemoryRepository</a></h3>
 <code><a href="../memory/InMemoryRepository.html#Empty()" title="Empty()">Empty</a>, <a href="../memory/InMemoryRepository.html#findAll()" title="findAll()">findAll</a>, <a href="../memory/InMemoryRepository.html#findOne(ID)" title="findOne(ID)">findOne</a></code>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -305,7 +305,7 @@ Extends <a href="../memory/InMemoryRepository.html" title="class in repository.m
 <dt>Specified by:</dt>
 <dd><code><a href="../Repository.html#save(E)">save</a></code>&nbsp;in interface&nbsp;<code><a href="../Repository.html" title="interface in repository">Repository</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>, <a href="#type-param-E" title="type parameter in AbstractFileRepository">E</a> extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>&gt;&gt;</code></dd>
 <dt>Overrides:</dt>
-<dd><code><a href="../memory/InMemoryRepository.html#save(E)">save</a></code>&nbsp;in class&nbsp;<code><a href="../memory/InMemoryRepository.html" title="class in repository.memory">InMemoryRepository</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>, <a href="#type-param-E" title="type parameter in AbstractFileRepository">E</a> extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>&gt;&gt;</code></dd>
+<dd><code><a href="../memory/InMemoryRepository.html#save(E)">save</a></code>&nbsp;in class&nbsp;<code><a href="../memory/InMemoryRepository.html" title="class in java.validation.repository.memory">InMemoryRepository</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>, <a href="#type-param-E" title="type parameter in AbstractFileRepository">E</a> extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>&gt;&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>entity</code> - the entity to save</dd>
 <dt>Returns:</dt>
@@ -325,7 +325,7 @@ Extends <a href="../memory/InMemoryRepository.html" title="class in repository.m
 <dt>Specified by:</dt>
 <dd><code><a href="../Repository.html#delete(ID)">delete</a></code>&nbsp;in interface&nbsp;<code><a href="../Repository.html" title="interface in repository">Repository</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>, <a href="#type-param-E" title="type parameter in AbstractFileRepository">E</a> extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>&gt;&gt;</code></dd>
 <dt>Overrides:</dt>
-<dd><code><a href="../memory/InMemoryRepository.html#delete(ID)">delete</a></code>&nbsp;in class&nbsp;<code><a href="../memory/InMemoryRepository.html" title="class in repository.memory">InMemoryRepository</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>, <a href="#type-param-E" title="type parameter in AbstractFileRepository">E</a> extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>&gt;&gt;</code></dd>
+<dd><code><a href="../memory/InMemoryRepository.html#delete(ID)">delete</a></code>&nbsp;in class&nbsp;<code><a href="../memory/InMemoryRepository.html" title="class in java.validation.repository.memory">InMemoryRepository</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>, <a href="#type-param-E" title="type parameter in AbstractFileRepository">E</a> extends <a href="../../domain/Entity.html" title="class in domain">Entity</a>&lt;<a href="#type-param-ID" title="type parameter in AbstractFileRepository">ID</a>&gt;&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>id</code> - the identifier of the entity to delete</dd>
 <dt>Returns:</dt>

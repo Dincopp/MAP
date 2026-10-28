@@ -1,0 +1,70 @@
+package SocialNetwork.repository;
+
+import SocialNetwork.validation.ValidationException;
+import SocialNetwork.domain.Entity;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+/**
+ * Generic CRUD interface for managing entities.
+ *
+ * @param <ID> the type of the entity identifier
+ * @param <E>  the type of the entity managed, extending {@link Entity}
+ */
+public interface Repository<ID, E extends Entity<ID>> {
+    /**
+     * Finds an entity by its identifier.
+     *
+     * @param id the identifier of the entity to find; cannot be {@code null}
+     * @return an {@link Optional} containing the entity if found, or {@link Optional#empty()} otherwise
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<E> findOne(ID id);
+
+    /**
+     * Returns all entities from the repository.
+     *
+     * @return an iterable collection of all entities
+     */
+    Iterable<E> findAll();
+
+    /**
+     * Finds all entities matching the given filter predicate using Stream API.
+     *
+     * @param filter the predicate used to test each entity; cannot be {@code null}
+     * @return a list containing all entities that satisfy the predicate
+     * @throws NullPointerException if {@code filter} is {@code null}
+     */
+    default List<E> findAll(Predicate<E> filter) {
+        Objects.requireNonNull(filter, "Filter predicate cannot be null");
+        return StreamSupport.stream(findAll().spliterator(), false)
+                .filter(filter)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Saves an entity in the repository.
+     *
+     * @param entity the entity to be saved; cannot be {@code null}
+     * @return {@link Optional#empty()} if the entity was saved successfully,
+     *         or an {@link Optional} containing the entity if it already exists
+     * @throws IllegalArgumentException if {@code entity} is {@code null}
+     * @throws ValidationException      if the entity is not valid
+     */
+    Optional<E> save(E entity);
+
+    /**
+     * Deletes the entity identified by ID from the repository.
+     *
+     * @param id the identifier of the entity to delete; cannot be {@code null}
+     * @return an {@link Optional} containing the deleted entity if found and removed,
+     *         or {@link Optional#empty()} if no entity exists with the given identifier
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
+    Optional<E> delete(ID id);
+}

@@ -2,7 +2,7 @@
 
 ### DejaVu License
 <pre>
-Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
+Fonts are (c) Bitstream (see below). DejaVu changes are in public java.validation.domain.
 Glyphs imported from Arev fonts are (c) Tavmjong Bah (see below)
 
 
@@ -103,10 +103,10 @@ from Tavmjong Bah. For further information, contact: tavmjong @ free
 
 TeX Gyre DJV Math
 -----------------
-Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
+Fonts are (c) Bitstream (see below). DejaVu changes are in public java.validation.domain.
 
 Math extensions done by B. Jackowski, P. Strzelczyk and P. Pianowski
-(on behalf of TeX users groups) are in public domain.
+(on behalf of TeX users groups) are in public java.validation.domain.
 
 Letters imported from Euler Fraktur from AMSfonts are (c) American
 Mathematical Society (see below).

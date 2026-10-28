@@ -99,7 +99,7 @@ initTheme();
 <h1 title="Class NetworkService" class="title">Class NetworkService</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">service.NetworkService</div>
+<div class="inheritance">main.SocialNetwork.service.NetworkService</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
@@ -148,7 +148,8 @@ and retrieving network-related statistics.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addFriendship(java.lang.Long,java.lang.Long)" class="member-name-link">addFriendship</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id1,
  <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id2)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Creates a friendship between two users and saves it in the friendship repository.</div>
+<div class="block">Creates a friendship between two users and saves it in the friendship
+    java.validation.repository.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../domain/Utilizator.html" title="class in domain">Utilizator</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addUser(domain.Utilizator)" class="member-name-link">addUser</a><wbr>(<a href="../domain/Utilizator.html" title="class in domain">Utilizator</a>&nbsp;utilizator)</code></div>
@@ -173,7 +174,7 @@ and retrieving network-related statistics.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../repository/Repository.html" title="interface in repository">Repository</a><wbr>&lt;<a href="../domain/Tuple.html" title="class in domain">Tuple</a>&lt;<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;, <a href="../domain/Friendship.html" title="class in domain">Friendship</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFriendshipRepo()" class="member-name-link">getFriendshipRepo</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the friendship repository.</div>
+<div class="block">Returns the friendship java.validation.repository.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/List.html" title="interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../domain/Utilizator.html" title="class in domain">Utilizator</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFriendsOfUser(java.lang.Long)" class="member-name-link">getFriendsOfUser</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;userId)</code></div>
@@ -183,13 +184,13 @@ and retrieving network-related statistics.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../repository/Repository.html" title="interface in repository">Repository</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, <a href="../domain/Utilizator.html" title="class in domain">Utilizator</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUserRepo()" class="member-name-link">getUserRepo</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the user repository.</div>
+<div class="block">Returns the user java.validation.repository.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeFriendship(java.lang.Long,java.lang.Long)" class="member-name-link">removeFriendship</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id1,
  <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id2)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Removes a friendship between two users from the friendship repository.</div>
+<div class="block">Removes a friendship between two users from the friendship java.validation.repository.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeUser(java.lang.Long)" class="member-name-link">removeUser</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id)</code></div>
@@ -289,7 +290,8 @@ in which they were involved.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addFriendship</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id1,
  <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id2)</span></div>
-<div class="block">Creates a friendship between two users and saves it in the friendship repository.</div>
+<div class="block">Creates a friendship between two users and saves it in the friendship
+    java.validation.repository.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>id1</code> - the identifier of the first user</dd>
@@ -306,7 +308,7 @@ in which they were involved.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeFriendship</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id1,
  <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&nbsp;id2)</span></div>
-<div class="block">Removes a friendship between two users from the friendship repository.</div>
+<div class="block">Removes a friendship between two users from the friendship java.validation.repository.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>id1</code> - the identifier of the first user</dd>
@@ -381,7 +383,7 @@ in which they were involved.</div>
 <h3>getUserRepo</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../repository/Repository.html" title="interface in repository">Repository</a>&lt;<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, <a href="../domain/Utilizator.html" title="class in domain">Utilizator</a>&gt;</span>&nbsp;<span class="element-name">getUserRepo</span>()</div>
-<div class="block">Returns the user repository.</div>
+<div class="block">Returns the user java.validation.repository.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the user repository</dd>
@@ -394,7 +396,7 @@ in which they were involved.</div>
 <h3>getFriendshipRepo</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../repository/Repository.html" title="interface in repository">Repository</a>&lt;<a href="../domain/Tuple.html" title="class in domain">Tuple</a>&lt;<a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;, <a href="../domain/Friendship.html" title="class in domain">Friendship</a>&gt;</span>&nbsp;<span class="element-name">getFriendshipRepo</span>()</div>
-<div class="block">Returns the friendship repository.</div>
+<div class="block">Returns the friendship java.validation.repository.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the friendship repository</dd>
