@@ -46,7 +46,7 @@ public class UI {
         System.out.println("7. Afiseaza useri");
         System.out.println("8. Afiseaza prietenii");
         System.out.println("9. Prieteni user");
-        System.out.println("10. Filtreaza utilizatori (Predicate & Criterii)");
+        System.out.println("10. Filtreaza utilizatori");
         System.out.println("0. Exit");
         System.out.print("Optiune: ");
     }

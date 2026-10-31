@@ -26,7 +26,6 @@ public class Main {
         // Base user validator
         Validator<Utilizator> baseUserValidator = new UtilizatorValidator();
 
-        // New validation rule written as a lambda expression without modifying UtilizatorValidator or creating a class
         Validator<Utilizator> nameLengthRule = u -> {
             if (u.getFirstName().length() < 2 || u.getLastName().length() < 2) {
                 throw new ValidationException("First and last names must contain at least 2 characters!");
