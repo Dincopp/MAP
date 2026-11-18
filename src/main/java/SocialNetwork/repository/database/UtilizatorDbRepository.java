@@ -213,6 +213,7 @@ public class UtilizatorDbRepository implements PagingRepository<Long, Utilizator
                 numberUtilizator = resultSet.getInt("count");
             }
             return numberUtilizator;
+            
         }
     }
 
