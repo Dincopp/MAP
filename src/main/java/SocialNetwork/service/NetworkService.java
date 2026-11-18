@@ -2,12 +2,14 @@ package SocialNetwork.service;
 
 import SocialNetwork.domain.Entity;
 import SocialNetwork.domain.Friendship;
+import SocialNetwork.repository.PagingRepository;
+import SocialNetwork.repository.util.Page;
 import SocialNetwork.validation.FriendshipValidator;
 import SocialNetwork.domain.Tuple;
 import SocialNetwork.domain.Utilizator;
 import SocialNetwork.repository.memory.FriendshipRepository;
 import SocialNetwork.repository.Repository;
-
+import SocialNetwork.repository.util.*;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -208,6 +210,31 @@ public class NetworkService {
                 .orElse(0L) + 1L;
     }
 
+
+    public Page<Utilizator> getUsersOnPage(int pageNumber, int pageSize) {
+        if (pageNumber < 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
+        }
+        if (!(userRepo instanceof PagingRepository<Long, Utilizator> pagingRepo)) {
+            throw new UnsupportedOperationException("Pagination is not supported by this repository.");
+        }
+        Pageable pageable = new Pageable(pageNumber, pageSize);
+        return pagingRepo.findAllOnPage(pageable);
+    }
+
+    public Page<Friendship> getFriendshipsOnPage(int pageNumber, int pageSize) {
+        if (pageNumber < 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
+        }
+        if (!(friendshipRepo instanceof PagingRepository<?, ?>)) {
+            throw new UnsupportedOperationException("Pagination is not supported by this friendship repository.");
+        }
+
+        PagingRepository<?, Friendship> pagingRepo = (PagingRepository<?, Friendship>) friendshipRepo;
+
+        Pageable pageable = new Pageable(pageNumber, pageSize);
+        return pagingRepo.findAllOnPage(pageable);
+    }
     /**
      * Returns all users in the network.
      *

@@ -23,7 +23,6 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        // Base user validator
         Validator<Utilizator> baseUserValidator = new UtilizatorValidator();
 
         Validator<Utilizator> nameLengthRule = u -> {
@@ -32,7 +31,6 @@ public class Main {
             }
         };
 
-        // Composed validator using the default method andThen
         Validator<Utilizator> userValidator = baseUserValidator.andThen(nameLengthRule);
         Validator<Friendship> friendshipValidator = new FriendshipValidator();
 

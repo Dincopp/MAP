@@ -4,12 +4,14 @@ import SocialNetwork.domain.CriteriiUtilizator;
 import SocialNetwork.domain.Friendship;
 import SocialNetwork.domain.Utilizator;
 import SocialNetwork.repository.RepositoryException;
+import SocialNetwork.repository.util.Page;
 import SocialNetwork.service.GraphService;
 import SocialNetwork.service.NetworkService;
 import SocialNetwork.service.ServiceException;
 import SocialNetwork.validation.ValidationException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -47,6 +49,8 @@ public class UI {
         System.out.println("8. Afiseaza prietenii");
         System.out.println("9. Prieteni user");
         System.out.println("10. Filtreaza utilizatori");
+        System.out.println("11. Paginare pt utilizatori");
+        System.out.println("12. Paginare pt prietenii");
         System.out.println("0. Exit");
         System.out.print("Optiune: ");
     }
@@ -76,6 +80,8 @@ public class UI {
                     case "8" -> handleShowFriendships();
                     case "9" -> handleShowUserFriends();
                     case "10" -> handleFilterUsers();
+                    case "11" -> handleUserPagination();
+                    case "12" -> handleFriendshipsPagination();
                     default -> System.out.println("Optiune invalida! Va rugam alegeti o optiune intre 0 si 10.");
                 }
             } catch (ValidationException e) {
@@ -218,6 +224,102 @@ public class UI {
         } else {
             System.out.println("Rezultate filtrare:");
             filtered.forEach(System.out::println);
+        }
+    }
+
+    private void handleUserPagination() {
+        System.out.println("=== Pagination ===");
+        try {
+            System.out.print("Page size: ");
+            int pageSize = Integer.parseInt(scanner.nextLine());
+
+            int pageNumber = 0;
+            while (true) {
+                Page<Utilizator> page = service.getUsersOnPage(pageNumber, pageSize);
+                int totalElements = page.getTotalNumberOfElements();
+                int totalPages = (totalElements + pageSize - 1) / pageSize;
+
+                if (totalElements == 0) {
+                    System.out.println("No users found.");
+                    break;
+                }
+
+                System.out.println("\nPage " + (pageNumber + 1) + "/" + totalPages + ":");
+                Iterable<Utilizator> elements = page.getElementsOnPage();
+
+                if (!elements.iterator().hasNext()) {
+                    System.out.println("   (Empty page)");
+                } else {
+                    elements.forEach(u -> System.out.println("   " + u));
+                }
+
+                System.out.print("\n[n] Next | [p] Previous | [g] Go to page | [x] Exit: ");
+                String cmd = scanner.nextLine().trim().toLowerCase();
+
+                if (cmd.equals("n")) {
+                    pageNumber++;
+                } else if (cmd.equals("p")) {
+                    pageNumber--;
+                } else if (cmd.equals("g")) {
+                    System.out.print("Enter page number (1-based): ");
+                    pageNumber = Integer.parseInt(scanner.nextLine()) - 1;
+                } else if (cmd.equals("x")) {
+                    break;
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format.");
+        } catch (IllegalArgumentException | UnsupportedOperationException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void handleFriendshipsPagination(){
+        System.out.println("=== Paginare Toate Prieteniile ===");
+        try {
+            System.out.print("Dimensiune pagina (pageSize): ");
+            int pageSize = Integer.parseInt(scanner.nextLine().trim());
+
+            int pageNumber = 0;
+            while (true) {
+                Page<Friendship> page = service.getFriendshipsOnPage(pageNumber, pageSize);
+                int totalElements = page.getTotalNumberOfElements();
+                int totalPages = (totalElements + pageSize - 1) / pageSize;
+
+                if (totalElements == 0) {
+                    System.out.println("Nu exista prietenii inregistrate.");
+                    break;
+                }
+
+                System.out.println("\nPagina " + (pageNumber + 1) + " din " + totalPages + " (Total prietenii: " + totalElements + "):");
+                Iterable<Friendship> friendships = page.getElementsOnPage();
+
+                if (!friendships.iterator().hasNext()) {
+                    System.out.println("   (Pagina goala)");
+                } else {
+                    friendships.forEach(f -> System.out.println("   " + f));
+                }
+
+                System.out.print("\n[n] Inainte | [p] Inapoi | [g] Mergi la pagina | [x] Iesire: ");
+                String cmd = scanner.nextLine().trim().toLowerCase();
+
+                switch (cmd) {
+                    case "n" -> pageNumber++;
+                    case "p" -> pageNumber--;
+                    case "g" -> {
+                        System.out.print("Numar pagina (1.." + totalPages + "): ");
+                        pageNumber = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                    }
+                    case "x" -> {
+                        return;
+                    }
+                    default -> System.out.println("Comanda invalida.");
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Format numeric invalid.");
+        } catch (IllegalArgumentException | UnsupportedOperationException | RepositoryException e) {
+            System.out.println("Eroare: " + e.getMessage());
         }
     }
 }

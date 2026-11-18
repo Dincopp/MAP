@@ -87,7 +87,7 @@ public class RepositoryFactory {
                 throw new RepositoryException("Incomplete connection details! (url, user, password)");
             }
             return new FriendshipDbRepository(validator, url, user, password);
-        });
+            });
     }
 
     /**

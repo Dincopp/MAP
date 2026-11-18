@@ -55,6 +55,31 @@ public class InMemoryRepository<ID, E extends Entity<ID>> implements Repository<
     }
 
     /**
+     * Validates and updates an entity in memory.
+     *
+     * @param entity the entity to save
+     * @return {@link Optional#empty()} if the entity was updated successfully,
+     *         or an {@link Optional} containing the entity if it already exists
+     * @throws RepositoryException if the entity is null
+     * @throws ValidationException if the entity is not valid according to the validator
+     */
+    @Override
+    public Optional<E> update(E entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("Entity cannot be null!");
+        }
+        if (entity.getId() == null) {
+            throw new IllegalArgumentException("Entity ID cannot be null!");
+        }
+        validator.validate(entity);
+
+        if (entities.get(entity.getId()) != null) {
+            entities.put(entity.getId(), entity);
+            return Optional.empty();
+        }
+        return Optional.of(entity);
+    }
+    /**
      * Validates and saves an entity in memory.
      *
      * @param entity the entity to save

@@ -1,5 +1,4 @@
 1;Mariana;Popescu
-2;Maria;Ionescu
 3;Alexandru;Radu
 4;Elena;Dumitrescu
 5;Cristian;Stan

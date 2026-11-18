@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 public final class CriteriiUtilizator {
 
     private CriteriiUtilizator() {
-        // Prevent instantiation
+
     }
 
     /**

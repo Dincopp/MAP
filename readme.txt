@@ -1,8 +1,6 @@
-================================================================================
-LABORATOR 4 - MAP: REFACTORIZARE JAVA 8 (STREAM API, LAMBDA, OPTIONAL)
-================================================================================
+LABORATOR 4 - MAP: REFACTORIZARE JAVA 8
 
-1. BUCLE INLOCUITE CU STREAM API (INAINTE / DUPA)
+1. BUCLE INLOCUITE CU STREAM API
 --------------------------------------------------------------------------------
 1. NetworkService.addUser
    - Inainte: for (Utilizator u : userRepo.findAll()) if (duplicat) throw ...;
@@ -45,7 +43,7 @@ LABORATOR 4 - MAP: REFACTORIZARE JAVA 8 (STREAM API, LAMBDA, OPTIONAL)
 - Comparator<T>: Comparator.comparingInt in GraphService pentru calculul celei mai sociabile comunitati.
 
 
-3. REFERINTE LA METODE (CELE 4 TIPURI)
+3. REFERINTE LA METODE
 --------------------------------------------------------------------------------
 1. Metoda statica: CriteriiUtilizator::faraPrieteni, Objects::nonNull
 2. Metoda de instanta pe un obiect particular: System.out::println, this::delete, this::createEntityasString, repo::delete, visited::contains
@@ -70,4 +68,11 @@ Justificare: fiecare entitate (Utilizator, Friendship) isi mentine propria respo
 Nicio colectie nu mai este parcursa cu bucle clasice. Singurele bucle pastrate sunt:
 - while(true) in UI.run() -> bucla de asteptare a comenzilor din consola (event loop).
 - while(!queue.isEmpty()) in GraphService.bfsMaxDistance() -> mecanismul de niveluri BFS (in care vecinii sunt insa filtrati si parcursi cu Stream).
-================================================================================
+
+
+7.Am optat pentru ștergerea explicită a prieteniilor în NetworkService (metoda removeUser) pentru
+a păstra aplicația decuplată de tipul de persistență folosit (polimorfism).
+Deoarece aplicația suportă și repository-uri în memorie și în fișiere (care nu beneficiază de mecanisme SQL),
+logica de ștergere în cascadă din Service garantează consistența datelor indiferent de RepositoryType-ul configurat.
+În plus, am păstrat și ON DELETE CASCADE la nivelul bazei de date
+PostgreSQL ca măsură suplimentară de integritate referențială în cazul modificărilor directe în DB.
