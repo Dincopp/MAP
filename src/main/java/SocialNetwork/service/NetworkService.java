@@ -210,7 +210,15 @@ public class NetworkService {
                 .orElse(0L) + 1L;
     }
 
-
+    /**
+     * Retrieves a paginated slice of users from the network.
+     *
+     * @param pageNumber the 0-based page index to retrieve (must be &gt;= 0)
+     * @param pageSize   the maximum number of users per page (must be &gt; 0)
+     * @return a {@link Page} containing the users on the requested page and the total user count
+     * @throws IllegalArgumentException      if {@code pageNumber < 0} or {@code pageSize <= 0}
+     * @throws UnsupportedOperationException if the underlying user repository does not support pagination
+     */
     public Page<Utilizator> getUsersOnPage(int pageNumber, int pageSize) {
         if (pageNumber < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
@@ -222,6 +230,15 @@ public class NetworkService {
         return pagingRepo.findAllOnPage(pageable);
     }
 
+    /**
+     * Retrieves a paginated slice of friendships from the network.
+     *
+     * @param pageNumber the 0-based page index to retrieve (must be &gt;= 0)
+     * @param pageSize   the maximum number of friendships per page (must be &gt; 0)
+     * @return a {@link Page} containing the friendships on the requested page and the total friendship count
+     * @throws IllegalArgumentException      if {@code pageNumber < 0} or {@code pageSize <= 0}
+     * @throws UnsupportedOperationException if the underlying friendship repository does not support pagination
+     */
     public Page<Friendship> getFriendshipsOnPage(int pageNumber, int pageSize) {
         if (pageNumber < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
@@ -235,6 +252,7 @@ public class NetworkService {
         Pageable pageable = new Pageable(pageNumber, pageSize);
         return pagingRepo.findAllOnPage(pageable);
     }
+
     /**
      * Returns all users in the network.
      *

@@ -1,9 +1,11 @@
 package SocialNetwork.repository.util;
 
 /**
- * How to sort: by which field and in which direction.
- * @param field     one of: title, director, year, duration
- * @param ascending true = ASC, false = DESC
+ * Specifies sorting criteria for query results, defining the entity field
+ * to sort by and the direction of the sort.
+ *
+ * @param field     the name of the entity attribute or column to sort by
+ * @param ascending {@code true} for ascending order, {@code false} for descending order
  */
 public record Sort(String field, boolean ascending) {
 

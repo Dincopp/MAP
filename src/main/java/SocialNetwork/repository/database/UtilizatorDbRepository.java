@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Database repository implementation for managing {@link Utilizator} entities via PostgreSQL.
+ * Database repository implementation for managing {@link Utilizator} entities via PostgreSQL,
+ * supporting pagination via {@link PagingRepository}.
  */
 public class UtilizatorDbRepository implements PagingRepository<Long, Utilizator> {
     private final Validator<Utilizator> validator;
@@ -127,7 +128,7 @@ public class UtilizatorDbRepository implements PagingRepository<Long, Utilizator
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     utilizator.setId(generatedKeys.getLong(1));
-                    System.out.println("Auto-generated id:"+utilizator.getId());
+                    System.out.println("Auto-generated id:" + utilizator.getId());
                 }
             }
 
@@ -138,13 +139,13 @@ public class UtilizatorDbRepository implements PagingRepository<Long, Utilizator
     }
 
     /**
-     * Deletes a user entity by its identifier from the database.
+     * Updates an existing user entity in the database.
      *
-     * @param entity the identifier of the user to delete
-     * @return an {@link Optional} containing the updated entity, or {@link Optional#empty()}
-     * @throws IllegalArgumentException if the entity is null
+     * @param entity the user entity with updated fields; cannot be null and must have a non-null ID
+     * @return {@link Optional#empty()} if the user was successfully updated,
+     *         or an {@link Optional} containing the entity if it does not exist in the database
+     * @throws IllegalArgumentException if the entity or its ID is null
      */
-
     @Override
     public Optional<Utilizator> update(Utilizator entity) {
         if (entity == null) {
@@ -203,41 +204,55 @@ public class UtilizatorDbRepository implements PagingRepository<Long, Utilizator
         }
     }
 
-
-    private int count(Connection connection) throws SQLException{
+    /**
+     * Counts the total number of users stored in the database.
+     *
+     * @param connection the active database connection
+     * @return the total number of users
+     * @throws SQLException if a database access error occurs
+     */
+    private int count(Connection connection) throws SQLException {
         String sql = "SELECT COUNT(*) AS count FROM users";
-        try(PreparedStatement statement = connection.prepareStatement(sql);
-        ResultSet resultSet = statement.executeQuery()){
-            int numberUtilizator=0;
-            while(resultSet.next()){
+        try (PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            int numberUtilizator = 0;
+            while (resultSet.next()) {
                 numberUtilizator = resultSet.getInt("count");
             }
             return numberUtilizator;
         }
     }
 
-    public Page<Utilizator> findAllOnPage(Pageable pageable){
+    /**
+     * Retrieves a page of {@link Utilizator} entities from the database based on the pagination criteria.
+     *
+     * @param pageable pagination specification defining page number and page size
+     * @return a {@link Page} containing the users on the requested page and the total count of users
+     * @throws RepositoryException if a database access error occurs during query execution
+     */
+    @Override
+    public Page<Utilizator> findAllOnPage(Pageable pageable) {
         List<Utilizator> utilizatori = new ArrayList<>();
         String sql = "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?";
 
-        try(Connection connection = DriverManager.getConnection(url,user,password);
-        PreparedStatement statement = connection.prepareStatement(sql)){
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             int totalUtilizatori = count(connection);
-            statement.setInt(1,pageable.getPageSize());
-            statement.setInt(2,pageable.getPageSize()*pageable.getPageNumber());
-            try(ResultSet resultSet = statement.executeQuery()){
-                while(resultSet.next()){
+            statement.setInt(1, pageable.getPageSize());
+            statement.setInt(2, pageable.getPageSize() * pageable.getPageNumber());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
                     Long id = resultSet.getLong("id");
                     String first_name = resultSet.getString("first_name");
                     String last_name = resultSet.getString("last_name");
-                    Utilizator u = new Utilizator(first_name,last_name);
+                    Utilizator u = new Utilizator(first_name, last_name);
                     u.setId(id);
                     utilizatori.add(u);
                 }
             }
-            return new Page<>(utilizatori,totalUtilizatori);
-        }catch(SQLException e){
-            throw new RepositoryException("Error: "+ e.getMessage(),e);
+            return new Page<>(utilizatori, totalUtilizatori);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error: " + e.getMessage(), e);
         }
     }
 

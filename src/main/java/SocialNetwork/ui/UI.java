@@ -227,6 +227,10 @@ public class UI {
         }
     }
 
+    /**
+     * Handles interactive console pagination for users,
+     * allowing navigation forward, backward, or jumping to a specific page.
+     */
     private void handleUserPagination() {
         System.out.println("=== Pagination ===");
         try {
@@ -274,7 +278,11 @@ public class UI {
         }
     }
 
-    private void handleFriendshipsPagination(){
+    /**
+     * Handles interactive console pagination for friendships,
+     * allowing navigation forward, backward, or jumping to a specific page.
+     */
+    private void handleFriendshipsPagination() {
         System.out.println("=== Paginare Toate Prieteniile ===");
         try {
             System.out.print("Dimensiune pagina (pageSize): ");

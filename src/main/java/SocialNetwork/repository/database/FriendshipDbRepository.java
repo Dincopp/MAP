@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Database repository implementation for managing {@link Friendship} entities via PostgreSQL.
+ * Database repository implementation for managing {@link Friendship} entities via PostgreSQL,
+ * supporting pagination via {@link PagingRepository}.
  */
 public class FriendshipDbRepository implements PagingRepository<Tuple<Long, Long>, Friendship> {
     private final Validator<Friendship> validator;
@@ -141,13 +142,15 @@ public class FriendshipDbRepository implements PagingRepository<Tuple<Long, Long
     }
 
     /**
-     * Deletes a friendship entity by its identifier from the database.
+     * Updates an existing friendship entity in the database.
      *
-     * @param entity the identifier of the friendship to delete
-     * @return an {@link Optional} containing the updated entity, or {@link Optional#empty()}
-     * @throws IllegalArgumentException if the entity is null
+     * @param entity the friendship entity with updated values; cannot be null and must have a valid ID
+     * @return {@link Optional#empty()} if the friendship was updated successfully,
+     *         or an {@link Optional} containing the entity if it does not exist
+     * @throws IllegalArgumentException if the entity or its ID is null
+     * @throws ValidationException      if the entity is not valid according to the validator
+     * @throws RepositoryException      if a database error occurs
      */
-
     @Override
     public Optional<Friendship> update(Friendship entity) {
         if (entity == null) {
@@ -176,6 +179,7 @@ public class FriendshipDbRepository implements PagingRepository<Tuple<Long, Long
             throw new RepositoryException("Eroare la actualizarea prieteniei", e);
         }
     }
+
     /**
      * Deletes a friendship entity by its identifier from the database.
      *
@@ -211,6 +215,14 @@ public class FriendshipDbRepository implements PagingRepository<Tuple<Long, Long
         }
     }
 
+    /**
+     * Retrieves a page of {@link Friendship} entities from the database based on the pagination criteria.
+     *
+     * @param pageable pagination specification defining page number and page size
+     * @return a {@link Page} containing the friendships on the requested page and the total count of friendships
+     * @throws RepositoryException if a database access error occurs during query execution
+     */
+    @Override
     public Page<Friendship> findAllOnPage(Pageable pageable) {
         List<Friendship> prietenii = new ArrayList<>();
         String sql = "SELECT id1, id2, friends_from FROM friendships ORDER BY id1, id2 LIMIT ? OFFSET ?";
