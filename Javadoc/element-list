@@ -1,9 +1,0 @@
-SocialNetwork.domain
-SocialNetwork.main
-SocialNetwork.repository
-SocialNetwork.repository.database
-SocialNetwork.repository.file
-SocialNetwork.repository.memory
-SocialNetwork.service
-SocialNetwork.ui
-SocialNetwork.validation
