@@ -3,6 +3,7 @@ package SocialNetwork.service;
 import SocialNetwork.domain.Entity;
 import SocialNetwork.domain.Friendship;
 import SocialNetwork.repository.PagingRepository;
+import SocialNetwork.repository.database.FriendshipDbRepository;
 import SocialNetwork.repository.util.Page;
 import SocialNetwork.validation.FriendshipValidator;
 import SocialNetwork.domain.Tuple;
@@ -251,6 +252,35 @@ public class NetworkService {
 
         Pageable pageable = new Pageable(pageNumber, pageSize);
         return pagingRepo.findAllOnPage(pageable);
+    }
+
+    /**
+     * Retrieves a paginated slice of friends for a given user from the network.
+     *
+     * @param userId     the identifier of the user whose friends are being queried
+     * @param pageNumber the 0-based page index to retrieve (must be &gt;= 0)
+     * @param pageSize   the maximum number of friends per page (must be &gt; 0)
+     * @return a {@link Page} containing the user's friends on the requested page and the total friend count
+     * @throws IllegalArgumentException      if {@code userId == null}, {@code pageNumber < 0}, or {@code pageSize <= 0}
+     * @throws ServiceException              if the user does not exist
+     * @throws UnsupportedOperationException if the underlying friendship repository does not support friends pagination
+     */
+    public Page<Utilizator> getFriendsOnPage(Long userId, int pageNumber, int pageSize) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null!");
+        }
+        if (pageNumber < 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
+        }
+        userRepo.findOne(userId)
+                .orElseThrow(() -> new ServiceException("User with ID " + userId + " does not exist!"));
+
+        if (friendshipRepo instanceof FriendshipDbRepository dbRepo) {
+            Pageable pageable = new Pageable(pageNumber, pageSize);
+            return dbRepo.findFriendsOnPage(userId, pageable);
+        }
+
+        throw new UnsupportedOperationException("Paging friends is only supported by database repository.");
     }
 
     /**

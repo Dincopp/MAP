@@ -148,7 +148,6 @@ public class FriendshipDbRepository implements PagingRepository<Tuple<Long, Long
      * @return {@link Optional#empty()} if the friendship was updated successfully,
      *         or an {@link Optional} containing the entity if it does not exist
      * @throws IllegalArgumentException if the entity or its ID is null
-     * @throws ValidationException      if the entity is not valid according to the validator
      * @throws RepositoryException      if a database error occurs
      */
     @Override
@@ -255,6 +254,60 @@ public class FriendshipDbRepository implements PagingRepository<Tuple<Long, Long
             return new Page<>(prietenii, total);
         } catch (SQLException e) {
             throw new RepositoryException("Error: " + e.getMessage(), e);
+        }
+    }
+
+    public Page<Utilizator> findFriendsOnPage(Long userId, Pageable pageable) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null!");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null!");
+        }
+
+        List<Utilizator> friends = new ArrayList<>();
+        String countSql = "SELECT COUNT(*) FROM friendships WHERE id1 = ? OR id2 = ?";
+        
+        String sql = "SELECT u.id, u.first_name, u.last_name " +
+                     "FROM friendships f " +
+                     "JOIN users u ON u.id = CASE WHEN f.id1 = ? THEN f.id2 ELSE f.id1 END " +
+                     "WHERE f.id1 = ? OR f.id2 = ? " +
+                     "ORDER BY u.id " +
+                     "LIMIT ? OFFSET ?";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+            int total = 0;
+            try (PreparedStatement countStmt = connection.prepareStatement(countSql)) {
+                countStmt.setLong(1, userId);
+                countStmt.setLong(2, userId);
+                try (ResultSet rsCount = countStmt.executeQuery()) {
+                    if (rsCount.next()) {
+                        total = rsCount.getInt(1);
+                    }
+                }
+            }
+
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setLong(1, userId);
+                statement.setLong(2, userId);
+                statement.setLong(3, userId);
+                statement.setInt(4, pageable.getPageSize());
+                statement.setInt(5, pageable.getPageSize() * pageable.getPageNumber());
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Long id = resultSet.getLong("id");
+                        String firstName = resultSet.getString("first_name");
+                        String lastName = resultSet.getString("last_name");
+                        Utilizator u = new Utilizator(firstName, lastName);
+                        u.setId(id);
+                        friends.add(u);
+                    }
+                }
+            }
+            return new Page<>(friends, total);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error finding friends on page: " + e.getMessage(), e);
         }
     }
 }

@@ -53,6 +53,7 @@ public class UI {
         System.out.println("10. Filtreaza utilizatori");
         System.out.println("11. Paginare pt utilizatori");
         System.out.println("12. Paginare pt prietenii");
+        System.out.println("13. Paginare prieteni user");
         System.out.println("0. Exit");
         System.out.print("Optiune: ");
     }
@@ -84,7 +85,8 @@ public class UI {
                     case "10" -> handleFilterUsers();
                     case "11" -> handleUserPagination();
                     case "12" -> handleFriendshipsPagination();
-                    default -> System.out.println("Optiune invalida! Va rugam alegeti o optiune intre 0 si 10.");
+                    case "13" -> handleUserFriendsPagination();
+                    default -> System.out.println("Optiune invalida! Va rugam alegeti o optiune intre 0 si 13.");
                 }
             } catch (ValidationException e) {
                 System.out.println("Eroare de validare: " + e.getMessage());
@@ -229,11 +231,6 @@ public class UI {
         }
     }
 
-    /**
-     * Handles interactive console pagination for users,
-     * allowing navigation forward, backward, or jumping to a specific page.
-     */
-
     private int getPageSizeFromConfig() {
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
@@ -247,6 +244,10 @@ public class UI {
         return 5;
     }
 
+    /**
+     * Handles interactive console pagination for users,
+     * allowing navigation forward, backward, or jumping to a specific page.
+     */
     private void handleUserPagination() {
         System.out.println("=== Pagination ===");
         try {
@@ -276,7 +277,12 @@ public class UI {
                 String cmd = scanner.nextLine().trim().toLowerCase();
 
                 if (cmd.equals("n")) {
-                    pageNumber++;
+                    if (pageNumber < totalPages)
+                        pageNumber++;
+                    else if (pageNumber >= totalPages) {
+                        System.out.println("(Empty page)");
+                        break;
+                    }
                 } else if (cmd.equals("p")) {
                     pageNumber--;
                 } else if (cmd.equals("g")) {
@@ -325,22 +331,81 @@ public class UI {
                 System.out.print("\n[n] Inainte | [p] Inapoi | [g] Mergi la pagina | [x] Iesire: ");
                 String cmd = scanner.nextLine().trim().toLowerCase();
 
-                switch (cmd) {
-                    case "n" -> pageNumber++;
-                    case "p" -> pageNumber--;
-                    case "g" -> {
-                        System.out.print("Numar pagina (1.." + totalPages + "): ");
-                        pageNumber = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                if (cmd.equals("n")) {
+                    if (pageNumber < totalPages)
+                        pageNumber++;
+                    else if (pageNumber >= totalPages) {
+                        System.out.println("(Empty page)");
+                        break;
                     }
-                    case "x" -> {
-                        return;
-                    }
-                    default -> System.out.println("Comanda invalida.");
+                } else if (cmd.equals("p")) {
+                    pageNumber--;
+                } else if (cmd.equals("g")) {
+                    System.out.print("Enter page number (1-based): ");
+                    pageNumber = Integer.parseInt(scanner.nextLine()) - 1;
+                } else if (cmd.equals("x")) {
+                    break;
                 }
             }
         } catch (NumberFormatException e) {
             System.out.println("Format numeric invalid.");
         } catch (IllegalArgumentException | UnsupportedOperationException | RepositoryException e) {
+            System.out.println("Eroare: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles interactive console pagination for the friends of a specific user.
+     */
+    private void handleUserFriendsPagination() {
+        System.out.println("=== Paginare Prieteni Utilizator ===");
+        try {
+            System.out.print("ID user: ");
+            Long userId = Long.parseLong(scanner.nextLine().trim());
+            int pageSize = getPageSizeFromConfig();
+
+            int pageNumber = 0;
+            while (true) {
+                Page<Utilizator> page = service.getFriendsOnPage(userId, pageNumber, pageSize);
+                int totalElements = page.getTotalNumberOfElements();
+                int totalPages = (totalElements + pageSize - 1) / pageSize;
+
+                if (totalElements == 0) {
+                    System.out.println("Utilizatorul nu are prieteni inregistrati.");
+                    break;
+                }
+
+                System.out.println("\nPagina " + (pageNumber + 1) + " din " + totalPages + " (Total prieteni: " + totalElements + "):");
+                Iterable<Utilizator> friends = page.getElementsOnPage();
+
+                if (!friends.iterator().hasNext()) {
+                    System.out.println("   (Pagina goala)");
+                } else {
+                    friends.forEach(u -> System.out.println("   " + u));
+                }
+
+                System.out.print("\n[n] Inainte | [p] Inapoi | [g] Mergi la pagina | [x] Iesire: ");
+                String cmd = scanner.nextLine().trim().toLowerCase();
+
+                if (cmd.equals("n")) {
+                    if (pageNumber < totalPages)
+                        pageNumber++;
+                    else if (pageNumber >= totalPages) {
+                        System.out.println("(Empty page)");
+                        break;
+                    }
+                } else if (cmd.equals("p")) {
+                    pageNumber--;
+                } else if (cmd.equals("g")) {
+                    System.out.print("Enter page number (1-based): ");
+                    pageNumber = Integer.parseInt(scanner.nextLine()) - 1;
+                } else if (cmd.equals("x")) {
+                    break;
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Format numeric invalid.");
+        } catch (IllegalArgumentException | UnsupportedOperationException | RepositoryException | ServiceException e) {
             System.out.println("Eroare: " + e.getMessage());
         }
     }
