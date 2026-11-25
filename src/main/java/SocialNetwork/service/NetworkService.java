@@ -2,28 +2,39 @@ package SocialNetwork.service;
 
 import SocialNetwork.domain.Entity;
 import SocialNetwork.domain.Friendship;
-import SocialNetwork.repository.PagingRepository;
-import SocialNetwork.repository.database.FriendshipDbRepository;
-import SocialNetwork.repository.util.Page;
-import SocialNetwork.validation.FriendshipValidator;
 import SocialNetwork.domain.Tuple;
 import SocialNetwork.domain.Utilizator;
-import SocialNetwork.repository.memory.FriendshipRepository;
+import SocialNetwork.repository.PagingRepository;
 import SocialNetwork.repository.Repository;
-import SocialNetwork.repository.util.*;
-import java.util.*;
+import SocialNetwork.repository.database.FriendshipDbRepository;
+import SocialNetwork.repository.memory.FriendshipRepository;
+import SocialNetwork.repository.util.Page;
+import SocialNetwork.repository.util.Pageable;
+import SocialNetwork.utils.events.ChangeEventType;
+import SocialNetwork.utils.events.EntityChangeEvent;
+import SocialNetwork.utils.observer.Observable;
+import SocialNetwork.utils.observer.Observer;
+import SocialNetwork.validation.FriendshipValidator;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
  * Service responsible for managing social network business logic using Java 8 Stream API:
- * adding/removing users, establishing/removing friendships,
- * and retrieving network-related statistics without imperative loops.
+ * adding/updating/removing users, establishing/removing friendships,
+ * and retrieving paginated or filtered network data.
+ * Implements {@link Observable} to notify UI controllers upon state modifications.
  */
-public class NetworkService {
+public class NetworkService implements Observable<EntityChangeEvent<?>> {
     private final Repository<Long, Utilizator> userRepo;
     private final Repository<Tuple<Long, Long>, Friendship> friendshipRepo;
+    private final List<Observer<EntityChangeEvent<?>>> observers = new CopyOnWriteArrayList<>();
 
     /**
      * Constructs a {@code NetworkService} with a user repository and a friendship repository.
@@ -46,6 +57,51 @@ public class NetworkService {
     }
 
     /**
+     * Registers an observer to be notified when users or friendships change.
+     *
+     * @param observer the observer to register
+     */
+    @Override
+    public void addObserver(Observer<EntityChangeEvent<?>> observer) {
+        if (observer != null && !observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    /**
+     * Unregisters an observer from receiving change notifications.
+     *
+     * @param observer the observer to remove
+     */
+    @Override
+    public void removeObserver(Observer<EntityChangeEvent<?>> observer) {
+        observers.remove(observer);
+    }
+
+    /**
+     * Notifies all registered observers about a change event.
+     *
+     * @param event the event to broadcast
+     */
+    @Override
+    public void notifyObservers(EntityChangeEvent<?> event) {
+        observers.forEach(observer -> observer.update(event));
+    }
+
+    /**
+     * Finds a user by their unique identifier.
+     *
+     * @param id the user identifier; cannot be {@code null}
+     * @return an {@link Optional} containing the user if found, or {@link Optional#empty()} otherwise
+     */
+    public Optional<Utilizator> findUser(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        return userRepo.findOne(id);
+    }
+
+    /**
      * Adds a new user to the system. If the user does not have an ID set, one is automatically generated incrementally.
      * Checks for duplicates using {@link java.util.stream.Stream#anyMatch(Predicate)}.
      *
@@ -60,7 +116,7 @@ public class NetworkService {
 
         boolean exists = StreamSupport.stream(userRepo.findAll().spliterator(), false)
                 .anyMatch(u -> Objects.equals(utilizator.getFirstName(), u.getFirstName()) &&
-                               Objects.equals(utilizator.getLastName(), u.getLastName()));
+                        Objects.equals(utilizator.getLastName(), u.getLastName()));
 
         if (exists) {
             throw new ServiceException("Un utilizator cu acest nume complet exista deja!");
@@ -75,7 +131,47 @@ public class NetworkService {
             throw new ServiceException("User with ID " + utilizator.getId() + " already exists!");
         }
 
+        notifyObservers(new EntityChangeEvent<>(ChangeEventType.ADD, utilizator));
         return utilizator;
+    }
+
+    /**
+     * Updates an existing user's first and last name.
+     *
+     * @param id        the identifier of the user to update
+     * @param firstName the new first name
+     * @param lastName  the new last name
+     * @return the updated {@link Utilizator}
+     * @throws IllegalArgumentException if {@code id} is null or no user exists with the given ID
+     * @throws ServiceException         if another user already has the same full name
+     */
+    public Utilizator updateUser(Long id, String firstName, String lastName) {
+        if (id == null) {
+            throw new IllegalArgumentException("User ID cannot be null!");
+        }
+
+        Utilizator oldUser = userRepo.findOne(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + id + " does not exist!"));
+
+        boolean duplicateName = StreamSupport.stream(userRepo.findAll().spliterator(), false)
+                .anyMatch(u -> !Objects.equals(u.getId(), id) &&
+                        Objects.equals(firstName, u.getFirstName()) &&
+                        Objects.equals(lastName, u.getLastName()));
+
+        if (duplicateName) {
+            throw new ServiceException("Un alt utilizator cu acest nume complet exista deja!");
+        }
+
+        Utilizator updatedUser = new Utilizator(firstName, lastName);
+        updatedUser.setId(id);
+
+        Optional<Utilizator> notUpdated = userRepo.update(updatedUser);
+        if (notUpdated.isPresent()) {
+            throw new IllegalArgumentException("User with ID " + id + " does not exist!");
+        }
+
+        notifyObservers(new EntityChangeEvent<>(ChangeEventType.UPDATE, updatedUser, oldUser));
+        return updatedUser;
     }
 
     /**
@@ -89,7 +185,7 @@ public class NetworkService {
         if (id == null) {
             throw new ServiceException("User ID cannot be null!");
         }
-        userRepo.findOne(id)
+        Utilizator existing = userRepo.findOne(id)
                 .orElseThrow(() -> new ServiceException("User with ID " + id + " does not exist!"));
 
         List<Tuple<Long, Long>> friendshipsToRemove = StreamSupport.stream(friendshipRepo.findAll().spliterator(), false)
@@ -99,6 +195,22 @@ public class NetworkService {
 
         friendshipsToRemove.forEach(friendshipRepo::delete);
         userRepo.delete(id);
+        notifyObservers(new EntityChangeEvent<>(ChangeEventType.DELETE, existing));
+    }
+
+    /**
+     * Checks whether a friendship exists between two users.
+     *
+     * @param id1 the first user ID
+     * @param id2 the second user ID
+     * @return {@code true} if the two users are friends, {@code false} otherwise
+     */
+    public boolean areFriends(Long id1, Long id2) {
+        if (id1 == null || id2 == null) {
+            return false;
+        }
+        Tuple<Long, Long> key = new Tuple<>(Math.min(id1, id2), Math.max(id1, id2));
+        return friendshipRepo.findOne(key).isPresent();
     }
 
     /**
@@ -125,6 +237,8 @@ public class NetworkService {
         if (existing.isPresent()) {
             throw new ServiceException("Friendship already exists!");
         }
+
+        notifyObservers(new EntityChangeEvent<>(ChangeEventType.ADD, friendship));
     }
 
     /**
@@ -148,6 +262,8 @@ public class NetworkService {
         if (deleted.isEmpty()) {
             throw new ServiceException("Friendship does not exist!");
         }
+
+        notifyObservers(new EntityChangeEvent<>(ChangeEventType.DELETE, deleted.get()));
     }
 
     /**
@@ -224,11 +340,15 @@ public class NetworkService {
         if (pageNumber < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
         }
-        if (!(userRepo instanceof PagingRepository<Long, Utilizator> pagingRepo)) {
-            throw new UnsupportedOperationException("Pagination is not supported by this repository.");
+        if (userRepo instanceof PagingRepository<Long, Utilizator> pagingRepo) {
+            Pageable pageable = new Pageable(pageNumber, pageSize);
+            return pagingRepo.findAllOnPage(pageable);
         }
-        Pageable pageable = new Pageable(pageNumber, pageSize);
-        return pagingRepo.findAllOnPage(pageable);
+        List<Utilizator> all = StreamSupport.stream(userRepo.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+        int fromIndex = Math.min(pageNumber * pageSize, all.size());
+        int toIndex = Math.min(fromIndex + pageSize, all.size());
+        return new Page<>(all.subList(fromIndex, toIndex), all.size());
     }
 
     /**
@@ -240,6 +360,7 @@ public class NetworkService {
      * @throws IllegalArgumentException      if {@code pageNumber < 0} or {@code pageSize <= 0}
      * @throws UnsupportedOperationException if the underlying friendship repository does not support pagination
      */
+    @SuppressWarnings("unchecked")
     public Page<Friendship> getFriendshipsOnPage(int pageNumber, int pageSize) {
         if (pageNumber < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Page number must be >= 0 and page size must be > 0.");
@@ -261,9 +382,8 @@ public class NetworkService {
      * @param pageNumber the 0-based page index to retrieve (must be &gt;= 0)
      * @param pageSize   the maximum number of friends per page (must be &gt; 0)
      * @return a {@link Page} containing the user's friends on the requested page and the total friend count
-     * @throws IllegalArgumentException      if {@code userId == null}, {@code pageNumber < 0}, or {@code pageSize <= 0}
-     * @throws ServiceException              if the user does not exist
-     * @throws UnsupportedOperationException if the underlying friendship repository does not support friends pagination
+     * @throws IllegalArgumentException if {@code userId == null}, {@code pageNumber < 0}, or {@code pageSize <= 0}
+     * @throws ServiceException         if the user does not exist
      */
     public Page<Utilizator> getFriendsOnPage(Long userId, int pageNumber, int pageSize) {
         if (userId == null) {
@@ -280,7 +400,10 @@ public class NetworkService {
             return dbRepo.findFriendsOnPage(userId, pageable);
         }
 
-        throw new UnsupportedOperationException("Paging friends is only supported by database repository.");
+        List<Utilizator> allFriends = getFriendsOfUser(userId);
+        int fromIndex = Math.min(pageNumber * pageSize, allFriends.size());
+        int toIndex = Math.min(fromIndex + pageSize, allFriends.size());
+        return new Page<>(allFriends.subList(fromIndex, toIndex), allFriends.size());
     }
 
     /**

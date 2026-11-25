@@ -1,9 +1,11 @@
 package SocialNetwork.repository;
 
+import SocialNetwork.domain.CererePrietenie;
 import SocialNetwork.validation.Validator;
 import SocialNetwork.domain.Friendship;
 import SocialNetwork.domain.Tuple;
 import SocialNetwork.domain.Utilizator;
+import SocialNetwork.repository.database.CererePrietenieDbRepository;
 import SocialNetwork.repository.database.FriendshipDbRepository;
 import SocialNetwork.repository.database.UtilizatorDbRepository;
 import SocialNetwork.repository.file.FriendshipFileRepository;
@@ -24,9 +26,12 @@ import java.util.function.Function;
  * to eliminate imperative switch statements.
  */
 public class RepositoryFactory {
+    private static final int DEFAULT_PAGE_SIZE = 5;
+
     private final Properties properties = new Properties();
     private final Map<RepositoryType, Function<Validator<Utilizator>, Repository<Long, Utilizator>>> userRepoCreators = new EnumMap<>(RepositoryType.class);
     private final Map<RepositoryType, Function<Validator<Friendship>, Repository<Tuple<Long, Long>, Friendship>>> friendshipRepoCreators = new EnumMap<>(RepositoryType.class);
+    private final Map<RepositoryType, Function<Validator<CererePrietenie>, Repository<Long, CererePrietenie>>> friendRequestRepoCreators = new EnumMap<>(RepositoryType.class);
 
     /**
      * Constructs a {@code RepositoryFactory} and loads configuration properties from the resource file,
@@ -87,7 +92,20 @@ public class RepositoryFactory {
                 throw new RepositoryException("Incomplete connection details! (url, user, password)");
             }
             return new FriendshipDbRepository(validator, url, user, password);
-            });
+        });
+
+        // Friend request repository creators
+        friendRequestRepoCreators.put(RepositoryType.MEMORY, InMemoryRepository::new);
+        friendRequestRepoCreators.put(RepositoryType.FILE, InMemoryRepository::new);
+        friendRequestRepoCreators.put(RepositoryType.DATABASE, validator -> {
+            String url = properties.getProperty("db.url");
+            String user = properties.getProperty("db.user");
+            String password = properties.getProperty("db.password");
+            if (url == null || user == null || password == null) {
+                throw new RepositoryException("Incomplete connection details! (url, user, password)");
+            }
+            return new CererePrietenieDbRepository(validator, url, user, password);
+        });
     }
 
     /**
@@ -138,5 +156,39 @@ public class RepositoryFactory {
             throw new RepositoryException("Unknown repository type: " + repoType);
         }
         return creator.apply(validator);
+    }
+
+    /**
+     * Creates a friend request repository according to the configured repository type.
+     *
+     * @param validator the validator used for validating {@link CererePrietenie} entities
+     * @return the configured friend request {@link Repository}
+     * @throws RepositoryException if the repository type is unsupported or creation fails
+     */
+    public Repository<Long, CererePrietenie> createFriendRequestRepository(Validator<CererePrietenie> validator) {
+        RepositoryType repoType = getRepositoryType();
+        Function<Validator<CererePrietenie>, Repository<Long, CererePrietenie>> creator = friendRequestRepoCreators.get(repoType);
+        if (creator == null) {
+            throw new RepositoryException("Unknown repository type: " + repoType);
+        }
+        return creator.apply(validator);
+    }
+
+    /**
+     * Reads the configured page size from {@code config.properties}.
+     *
+     * @return the configured page size, or {@code 5} if missing or invalid
+     */
+    public int getPageSize() {
+        String raw = properties.getProperty("PAGE_SIZE");
+        if (raw == null || raw.trim().isEmpty()) {
+            return DEFAULT_PAGE_SIZE;
+        }
+        try {
+            int parsed = Integer.parseInt(raw.trim());
+            return parsed > 0 ? parsed : DEFAULT_PAGE_SIZE;
+        } catch (NumberFormatException e) {
+            return DEFAULT_PAGE_SIZE;
+        }
     }
 }

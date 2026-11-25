@@ -124,6 +124,21 @@ public abstract class AbstractFileRepository<ID, E extends Entity<ID>> extends I
     }
 
     /**
+     * Updates an entity in memory and persists changes to the file on disk if the update succeeded.
+     *
+     * @param entity the entity with updated fields
+     * @return {@link Optional#empty()} if updated successfully, or an {@link Optional} containing the entity if not found
+     */
+    @Override
+    public Optional<E> update(E entity) {
+        Optional<E> res = super.update(entity);
+        if (res.isEmpty()) {
+            writeToFile();
+        }
+        return res;
+    }
+
+    /**
      * Deletes an entity from memory and updates the file on disk if the operation succeeded.
      *
      * @param id the identifier of the entity to delete

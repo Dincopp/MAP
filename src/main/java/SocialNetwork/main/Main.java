@@ -1,47 +1,17 @@
 package SocialNetwork.main;
 
-import SocialNetwork.domain.Friendship;
-import SocialNetwork.domain.Tuple;
-import SocialNetwork.domain.Utilizator;
-import SocialNetwork.validation.FriendshipValidator;
-import SocialNetwork.validation.UtilizatorValidator;
-import SocialNetwork.validation.ValidationException;
-import SocialNetwork.validation.Validator;
-import SocialNetwork.repository.Repository;
-import SocialNetwork.repository.RepositoryFactory;
-import SocialNetwork.service.GraphService;
-import SocialNetwork.service.NetworkService;
-import SocialNetwork.ui.UI;
+import SocialNetwork.StartApplication;
 
 /**
- * Main application entry point demonstrating functional composition of validators via {@link Validator#andThen(Validator)}.
+ * Launcher entry point delegating to {@link StartApplication}.
  */
 public class Main {
     /**
-     * Main method that initializes application components and starts the console interface.
+     * Main method that starts the JavaFX GUI application.
      *
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        Validator<Utilizator> baseUserValidator = new UtilizatorValidator();
-
-        Validator<Utilizator> nameLengthRule = u -> {
-            if (u.getFirstName().length() < 2 || u.getLastName().length() < 2) {
-                throw new ValidationException("First and last names must contain at least 2 characters!");
-            }
-        };
-
-        Validator<Utilizator> userValidator = baseUserValidator.andThen(nameLengthRule);
-        Validator<Friendship> friendshipValidator = new FriendshipValidator();
-
-        RepositoryFactory factory = new RepositoryFactory();
-        Repository<Long, Utilizator> userRepo = factory.createUserRepository(userValidator);
-        Repository<Tuple<Long, Long>, Friendship> friendshipRepo = factory.createFriendshipRepository(friendshipValidator);
-
-        NetworkService service = new NetworkService(userRepo, friendshipRepo);
-        GraphService graphService = new GraphService(userRepo, friendshipRepo);
-        UI ui = new UI(service, graphService);
-
-        ui.run();
+        StartApplication.main(args);
     }
 }
