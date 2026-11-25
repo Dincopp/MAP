@@ -10,8 +10,10 @@ import SocialNetwork.service.NetworkService;
 import SocialNetwork.service.ServiceException;
 import SocialNetwork.validation.ValidationException;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -231,11 +233,24 @@ public class UI {
      * Handles interactive console pagination for users,
      * allowing navigation forward, backward, or jumping to a specific page.
      */
+
+    private int getPageSizeFromConfig() {
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            if (input != null) {
+                properties.load(input);
+                return Integer.parseInt(properties.getProperty("PAGE_SIZE", "5").trim());
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load PAGE_SIZE from config.properties, using default (5).");
+        }
+        return 5;
+    }
+
     private void handleUserPagination() {
         System.out.println("=== Pagination ===");
         try {
-            System.out.print("Page size: ");
-            int pageSize = Integer.parseInt(scanner.nextLine());
+            int pageSize = getPageSizeFromConfig();
 
             int pageNumber = 0;
             while (true) {
@@ -285,8 +300,7 @@ public class UI {
     private void handleFriendshipsPagination() {
         System.out.println("=== Paginare Toate Prieteniile ===");
         try {
-            System.out.print("Dimensiune pagina (pageSize): ");
-            int pageSize = Integer.parseInt(scanner.nextLine().trim());
+            int pageSize = getPageSizeFromConfig();
 
             int pageNumber = 0;
             while (true) {
